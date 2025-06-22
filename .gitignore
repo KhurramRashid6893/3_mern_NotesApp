@@ -1,0 +1,67 @@
+# Node.js (backend + frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# dotenv environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+debug.log
+
+# Build outputs
+build/
+dist/
+
+# React specific
+.cache/
+public/static/
+coverage/
+
+# IDEs / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.tgz
+*.gz
+*.zip
+*.bak
+*.tmp
+
+# MongoDB Compass exports or dumps
+dump/
+*.archive
+
+# Optional: git-credential helpers, ssh configs if accidentally added
+*.pem
+*.key
+
+# Optional: VSCode workspace settings file
+*.code-workspace
+
+# Optional: local database files (if any)
+*.sqlite
+*.db
+
+# Optional: logs
+*.out
+*.pid
+*.seed
+
+# Optional: test snapshots
+*.snap
