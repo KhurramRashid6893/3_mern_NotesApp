@@ -1,0 +1,244 @@
+.home-welcome-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 1rem;
+}
+
+.home-welcome-card {
+  background-color: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.home-welcome-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+}
+
+.home-welcome-description {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: var(--text-light);
+}
+
+.home-features-list {
+  text-align: left;
+  margin-bottom: 2rem;
+  padding-left: 1.5rem;
+}
+
+.home-features-list li {
+  margin-bottom: 0.8rem;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+}
+
+.home-features-list li::before {
+  content: "✓";
+  color: var(--secondary);
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.home-auth-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.home-signup-btn, .home-login-btn {
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: var(--transition);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.home-signup-btn {
+  background-color: var(--secondary);
+  color: white;
+}
+
+.home-signup-btn:hover {
+  background-color: #0da271;
+  transform: translateY(-2px);
+}
+
+.home-login-btn {
+  background-color: var(--primary);
+  color: white;
+}
+
+.home-login-btn:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.home-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.home-header {
+  margin-bottom: 2rem;
+}
+
+.home-greeting h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.home-age-group {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.notes-controls {
+  margin-bottom: 2rem;
+  background-color: var(--card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.search-container {
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.filters-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-weight: 500;
+}
+
+.filter-select {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.notes-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.empty-notes {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-notes h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+/* Responsive styles */
+@media (max-width: 640px) {
+  .home-welcome-card {
+    padding: 1.5rem;
+  }
+  
+  .home-welcome-title {
+    font-size: 1.6rem;
+  }
+  
+  .filters-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .filter-select {
+    width: 70%;
+  }
+  
+  .home-auth-buttons {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .home-auth-buttons a {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .notes-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-container {
+    max-width: 1200px;
+  }
+  
+  .notes-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
