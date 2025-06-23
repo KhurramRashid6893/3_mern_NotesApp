@@ -6,7 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import NoteDetails from './pages/NoteDetails';
 import Profile from './pages/Profile';
-import Landing from './pages/Landing'; // 👉 create this page
+import Landing from './pages/Landing'; // ✅ Landing page
 import './App.css';
 
 function App() {
@@ -24,9 +24,10 @@ function App() {
     }
   }, [darkMode]);
 
+  // ✅ PrivateRoute for guarding protected routes
   const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('token');
-    return token ? children : <Navigate to="/login" />;
+    return token ? children : <Navigate to="/login" replace />;
   };
 
   return (
@@ -35,10 +36,12 @@ function App() {
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
         <main className="app-content">
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Register />} />
 
+            {/* Protected routes */}
             <Route path="/dashboard" element={
               <PrivateRoute>
                 <Home />
@@ -56,6 +59,9 @@ function App() {
                 <Profile />
               </PrivateRoute>
             } />
+
+            {/* Catch all — optional */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>

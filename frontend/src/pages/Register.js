@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+// ✅ Replaced axios with apiClient
+import apiClient from '../api';  // Added this line for centralized API client
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import '../css/auth.css';
@@ -24,15 +25,16 @@ function Register({ toggleTheme, currentTheme }) {
     setIsLoading(true);
     
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
-      
+      // ✅ Use apiClient
+      await apiClient.post('/api/auth/register', formData);
+
       await Swal.fire({
         title: '🎉 Registration Successful!',
         text: 'You can now login with your credentials',
         icon: 'success',
         confirmButtonText: 'Go to Login'
       });
-      
+
       navigate('/login');
     } catch (err) {
       Swal.fire({

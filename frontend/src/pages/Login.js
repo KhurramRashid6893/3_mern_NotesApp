@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import apiClient from '../utils/api'; // ✅ Added import for apiClient
 import '../css/auth.css';
 
 function Login({ toggleTheme, currentTheme }) {
@@ -22,7 +22,8 @@ function Login({ toggleTheme, currentTheme }) {
     setIsLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', formData);
+      // ✅ Updated to use apiClient
+      const res = await apiClient.post('/api/auth/login', formData);
 
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('name', res.data.name);

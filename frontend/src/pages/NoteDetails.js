@@ -1,7 +1,7 @@
 // Description: Displays details of a single note with options to edit it.
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import apiClient from '../utils/api'; // ✅ Replaced axios with apiClient
 import '../css/NoteDetails.css';
 
 function NoteDetails({ params }) {
@@ -12,23 +12,27 @@ function NoteDetails({ params }) {
 
   useEffect(() => {
     const fetchNote = async () => {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:5000/api/notes/${id}`, {
-        headers: { Authorization: token }
-      });
-      setNote(res.data);
-      setContent(res.data.content);
+      try {
+        // ✅ Using apiClient for GET
+        const res = await apiClient.get(`/api/notes/${id}`);
+        setNote(res.data);
+        setContent(res.data.content);
+      } catch (err) {
+        console.error('Failed to fetch note', err);
+      }
     };
     fetchNote();
   }, [id]);
 
   const handleUpdate = async () => {
-    const token = localStorage.getItem('token');
-    await axios.put(`http://localhost:5000/api/notes/${id}`, { content }, {
-      headers: { Authorization: token }
-    });
-    setNote(prev => ({ ...prev, content }));
-    setEdit(false);
+    try {
+      // ✅ Using apiClient for PUT
+      await apiClient.put(`/api/notes/${id}`, { content });
+      setNote(prev => ({ ...prev, content }));
+      setEdit(false);
+    } catch (err) {
+      console.error('Failed to update note', err);
+    }
   };
 
   if (!note) return (

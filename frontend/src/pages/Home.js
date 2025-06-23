@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import apiClient from '../utils/api'; // ✅ Added import for apiClient
 import NoteForm from '../components/NoteForm';
 import NoteItem from '../components/NoteItem';
 import '../css/Home.css';
@@ -25,13 +25,12 @@ function Home() {
 
     const fetchNotes = async () => {
       try {
-        let url = `http://localhost:5000/api/notes?sort=${sort}`;
+        let url = `/api/notes?sort=${sort}`; // ✅ Updated URL to be relative
         if (search) url += `&search=${search}`;
         if (visibilityFilter !== 'all') url += `&visibility=${visibilityFilter}`;
 
-        const res = await axios.get(url, {
-          headers: { Authorization: token },
-        });
+        // ✅ Updated to use apiClient
+        const res = await apiClient.get(url);
         setNotes(res.data);
       } catch (err) {
         console.error(err);

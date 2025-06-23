@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../api';  // ✅ ADDED: Use apiClient instead of axios
 import ReactMarkdown from 'react-markdown';
 import { FiEdit2, FiTrash2, FiSave, FiX, FiUser, FiLock, FiUnlock } from 'react-icons/fi';
 import '../css/NoteItem.css';
@@ -19,10 +19,7 @@ function NoteItem({ note, onDelete, onUpdated }) {
     if (!window.confirm('Are you sure you want to delete this note?')) return;
     setIsDeleting(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/notes/${note._id}`, {
-        headers: { Authorization: token },
-      });
+      await apiClient.delete(`/api/notes/${note._id}`);  // ✅ UPDATED: Use apiClient
       onDelete();
     } catch (error) {
       console.error('Delete error:', error);
@@ -34,14 +31,11 @@ function NoteItem({ note, onDelete, onUpdated }) {
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/notes/${note._id}`, {
+      await apiClient.put(`/api/notes/${note._id}`, {  // ✅ UPDATED: Use apiClient
         content,
         tags: tags.split(',').map(t => t.trim()).filter(t => t),
         category,
         visibility
-      }, {
-        headers: { Authorization: token },
       });
       setIsEditing(false);
       onUpdated();
@@ -72,7 +66,6 @@ function NoteItem({ note, onDelete, onUpdated }) {
           </div>
         </div>
 
-        {/* Show owner only if it's a public note AND it's not my note */}
         {note.visibility === 'public' && note.user && note.user._id !== currentUserId && (
           <div className="shared-by">
             <FiUser className="user-icon" />

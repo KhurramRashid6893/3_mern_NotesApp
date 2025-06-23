@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import '../css/NoteForm.css';
+
+// ✅ Import your api.js instead of hardcoded axios
+import apiClient from '../api'; // <--- Added line to use your centralized API client
 
 function NoteForm({ onSaved }) {
   const [title, setTitle] = useState('');
@@ -15,16 +18,14 @@ function NoteForm({ onSaved }) {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/notes',
+      await apiClient.post('/api/notes',  // <--- Changed from axios + localhost to apiClient
         {
           title,
           content,
           tags: tags.split(',').map(t => t.trim()).filter(t => t),
           category,
           visibility
-        },
-        { headers: { Authorization: token } }
+        }
       );
       setTitle('');
       setContent('');
