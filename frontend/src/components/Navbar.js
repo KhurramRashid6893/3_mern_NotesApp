@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import '../css/Navbar.css';
 
 function Navbar({ darkMode, setDarkMode }) {
   const navigate = useNavigate();
@@ -9,70 +10,55 @@ function Navbar({ darkMode, setDarkMode }) {
 
   const handleBack = () => {
     if (location.pathname === '/login' && token) {
-      handleLogout();
+      handleLogout(true);
     } else {
       navigate(-1);
     }
   };
 
-  const handleLogout = () => {
-  Swal.fire({
-    title: 'Logout?',
-    text: "Are you sure you want to logout?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, logout',
-    cancelButtonText: 'Cancel'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('name');
-      localStorage.removeItem('ageGroup');
-      navigate('/', { replace: true });  // ✅ Force redirect to home
-      window.location.reload(); // ✅ Ensures fresh state (optional but ensures reset)
-    }
-  });
-};
-
-
-  const isHome = location.pathname === '/';
+  const handleLogout = (fromBack = false) => {
+    Swal.fire({
+      title: 'Logout?',
+      text: fromBack
+        ? `If you go back now, you will be logged out.`
+        : `Are you sure you want to logout?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, logout',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.clear();
+        navigate('/', { replace: true });
+        window.location.reload();
+      }
+    });
+  };
 
   return (
-    <nav className="bg-blue-600 p-4 flex justify-between items-center">
-      <div className="flex items-center gap-2">
-        {!isHome ? (
-          <button
-            onClick={handleBack}
-            className="text-white border rounded p-1 text-sm"
-          >
-            Back
-          </button>
-        ) : (
-          <button
-            disabled
-            className="text-white border border-white opacity-50 rounded p-1 text-sm cursor-not-allowed"
-          >
-            Back
-          </button>
-        )}
-        <Link to="/" className="text-white font-bold text-xl">NotesApp</Link>
+    <nav className={`navbar ${darkMode ? 'dark' : ''}`}>
+      <div className="navbar-left">
+        <button
+          onClick={handleBack}
+          className={`back-btn ${location.pathname === '/' ? 'disabled' : ''}`}
+          disabled={location.pathname === '/'}
+        >
+          ← Back
+        </button>
+
+        <Link to="/" className="logo">
+          📝 <span className="logo-text">NotesApp</span>
+          <span className="logo-tagline">Your thoughts, organized</span>
+        </Link>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="navbar-right">
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="text-white border rounded p-1 text-sm"
+          className="theme-toggle"
         >
-          {darkMode ? 'Light Mode' : 'Dark Mode'}
+          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
         </button>
-        {token && (
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white p-1 rounded text-sm"
-          >
-            Logout
-          </button>
-        )}
       </div>
     </nav>
   );

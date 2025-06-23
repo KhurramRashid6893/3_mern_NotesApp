@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import '../css/NoteDetails.css';
 
 function NoteDetails({ params }) {
   const id = window.location.pathname.split('/').pop();
@@ -30,28 +31,60 @@ function NoteDetails({ params }) {
     setEdit(false);
   };
 
-  if (!note) return <p>Loading...</p>;
+  if (!note) return (
+    <div className="loader-container">
+      <div className="loader"></div>
+      <p className="loading-text">Loading your note...</p>
+    </div>
+  );
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-      <h2 className="font-bold text-xl">{note.title}</h2>
+    <div className="note-details-container">
+      <div className="note-header">
+        <h2 className="note-title">
+          <span className="emoji">📝</span> {note.title}
+        </h2>
+        <div className="last-updated">
+          Last updated: {new Date(note.updatedAt).toLocaleString()}
+        </div>
+      </div>
+
       {edit ? (
-        <>
+        <div className="edit-mode">
           <textarea
-            className="w-full p-2 border rounded mt-2"
-            rows="6"
+            className="note-edit-textarea"
             value={content}
             onChange={e => setContent(e.target.value)}
+            placeholder="Write your note here..."
+            autoFocus
           />
-          <button className="bg-blue-600 text-white p-2 rounded mt-2" onClick={handleUpdate}>Save</button>
-        </>
+          <div className="button-group">
+            <button 
+              className="btn save-btn"
+              onClick={handleUpdate}
+            >
+              💾 Save Changes
+            </button>
+            <button 
+              className="btn cancel-btn"
+              onClick={() => setEdit(false)}
+            >
+              ❌ Cancel
+            </button>
+          </div>
+        </div>
       ) : (
-        <>
-          <div className="mt-2">
+        <div className="view-mode">
+          <div className="markdown-content">
             <ReactMarkdown>{note.content}</ReactMarkdown>
           </div>
-          <button className="bg-blue-600 text-white p-2 rounded mt-2" onClick={() => setEdit(true)}>Edit</button>
-        </>
+          <button 
+            className="btn edit-btn"
+            onClick={() => setEdit(true)}
+          >
+            ✏️ Edit Note
+          </button>
+        </div>
       )}
     </div>
   );

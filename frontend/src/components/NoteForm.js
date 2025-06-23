@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import '../css/NoteForm.css';
 
 function NoteForm({ onSaved }) {
   const [title, setTitle] = useState('');
@@ -8,9 +9,11 @@ function NoteForm({ onSaved }) {
   const [tags, setTags] = useState('');
   const [category, setCategory] = useState('');
   const [visibility, setVisibility] = useState('private');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
       await axios.post('http://localhost:5000/api/notes',
@@ -31,27 +34,130 @@ function NoteForm({ onSaved }) {
       onSaved();
     } catch {
       alert('Error saving note');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-      <h2 className="font-bold mb-2">Create Note</h2>
-      <form onSubmit={handleSubmit} className="space-y-2">
-        <input className="w-full p-2 border rounded" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title" required />
-        <textarea className="w-full p-2 border rounded" value={content} onChange={e => setContent(e.target.value)} placeholder="Write in Markdown..." rows="4" />
-        <input className="w-full p-2 border rounded" value={tags} onChange={e => setTags(e.target.value)} placeholder="Tags (comma separated)" />
-        <input className="w-full p-2 border rounded" value={category} onChange={e => setCategory(e.target.value)} placeholder="Category" />
-        <select className="w-full p-2 border rounded" value={visibility} onChange={e => setVisibility(e.target.value)}>
-          <option value="private">Private</option>
-          <option value="public">Public</option>
-        </select>
-        <button className="bg-blue-600 text-white p-2 rounded">Save</button>
+    <div className="note-form-container">
+      <div className="note-form-header">
+        <h2 className="form-title">
+          <span className="emoji">✨</span> Create New Note
+        </h2>
+        <p className="form-subtitle">Capture your thoughts and ideas in Markdown format</p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="note-form">
+        <div className="form-group">
+          <label className="form-label">
+            <span className="label-icon">📌</span> Title
+          </label>
+          <input 
+            className="form-input" 
+            value={title} 
+            onChange={e => setTitle(e.target.value)} 
+            placeholder="Note title" 
+            required 
+          />
+        </div>
+        
+        <div className="form-group">
+          <label className="form-label">
+            <span className="label-icon">📝</span> Content (Markdown)
+          </label>
+          <textarea 
+            className="form-textarea" 
+            value={content} 
+            onChange={e => setContent(e.target.value)} 
+            placeholder="Write your note here in Markdown format..." 
+            rows="6"
+          />
+        </div>
+        
+        <div className="form-columns">
+          <div className="form-group">
+            <label className="form-label">
+              <span className="label-icon">🏷️</span> Tags
+            </label>
+            <input 
+              className="form-input" 
+              value={tags} 
+              onChange={e => setTags(e.target.value)} 
+              placeholder="Comma separated tags (e.g., work, ideas)"
+            />
+            <div className="input-hint">Separate tags with commas</div>
+          </div>
+          
+          <div className="form-group">
+            <label className="form-label">
+              <span className="label-icon">🗂️</span> Category
+            </label>
+            <input 
+              className="form-input" 
+              value={category} 
+              onChange={e => setCategory(e.target.value)} 
+              placeholder="Category (e.g., Personal, Work)"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label className="form-label">
+              <span className="label-icon">👁️</span> Visibility
+            </label>
+            <div className="radio-group">
+              <label className="radio-option">
+                <input 
+                  type="radio" 
+                  name="visibility" 
+                  value="private" 
+                  checked={visibility === 'private'} 
+                  onChange={() => setVisibility('private')} 
+                />
+                <span className="radio-label">Private</span>
+              </label>
+              <label className="radio-option">
+                <input 
+                  type="radio" 
+                  name="visibility" 
+                  value="public" 
+                  checked={visibility === 'public'} 
+                  onChange={() => setVisibility('public')} 
+                />
+                <span className="radio-label">Public</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <button 
+          className={`submit-btn ${isSubmitting ? 'submitting' : ''}`} 
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <span className="spinner"></span> Saving...
+            </>
+          ) : (
+            <>
+              <span className="icon">💾</span> Save Note
+            </>
+          )}
+        </button>
       </form>
+      
       {content && (
-        <div className="mt-4 p-2 border rounded">
-          <h3 className="font-bold">Preview</h3>
-          <ReactMarkdown>{content}</ReactMarkdown>
+        <div className="preview-container">
+          <div className="preview-header">
+            <h3 className="preview-title">
+              <span className="emoji">👁️</span> Preview
+            </h3>
+            <div className="preview-hint">Live Markdown rendering</div>
+          </div>
+          <div className="markdown-preview">
+            <ReactMarkdown>{content}</ReactMarkdown>
+          </div>
         </div>
       )}
     </div>

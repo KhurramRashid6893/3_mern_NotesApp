@@ -1,0 +1,46 @@
+.landing-container {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: var(--bg, #ffffff);
+  color: var(--text, #1e293b);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.landing-container.dark {
+  --bg: #1e293b;
+  --text: #f1f5f9;
+}
+
+.landing-container h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.landing-container p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.landing-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.landing-btn {
+  background-color: #3b82f6;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.landing-btn:hover {
+  background-color: #2563eb;
+}

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import { FiEdit2, FiTrash2, FiSave, FiX, FiUser, FiLock, FiUnlock } from 'react-icons/fi';
+import '../css/NoteItem.css';
 
 function NoteItem({ note, onDelete, onUpdated }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -8,113 +10,200 @@ function NoteItem({ note, onDelete, onUpdated }) {
   const [tags, setTags] = useState(note.tags.join(', '));
   const [category, setCategory] = useState(note.category || '');
   const [visibility, setVisibility] = useState(note.visibility || 'private');
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const currentUserId = localStorage.getItem('userId'); // You should store this at login!
+  const currentUserId = localStorage.getItem('userId');
 
   const handleDelete = async () => {
-    const token = localStorage.getItem('token');
-    if (!window.confirm('Delete this note?')) return;
-    await axios.delete(`http://localhost:5000/api/notes/${note._id}`, {
-      headers: { Authorization: token },
-    });
-    onDelete();
+    if (!window.confirm('Are you sure you want to delete this note?')) return;
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5000/api/notes/${note._id}`, {
+        headers: { Authorization: token },
+      });
+      onDelete();
+    } catch (error) {
+      console.error('Delete error:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleUpdate = async () => {
-    const token = localStorage.getItem('token');
-    await axios.put(`http://localhost:5000/api/notes/${note._id}`, {
-      content,
-      tags: tags.split(',').map(t => t.trim()).filter(t => t),
-      category,
-      visibility
-    }, {
-      headers: { Authorization: token },
-    });
-    setIsEditing(false);
-    onUpdated();
+    setIsUpdating(true);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:5000/api/notes/${note._id}`, {
+        content,
+        tags: tags.split(',').map(t => t.trim()).filter(t => t),
+        category,
+        visibility
+      }, {
+        headers: { Authorization: token },
+      });
+      setIsEditing(false);
+      onUpdated();
+    } catch (error) {
+      console.error('Update error:', error);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-      <h3 className="font-bold text-lg">{note.title}</h3>
-      <p className="text-sm text-gray-500">{new Date(note.createdAt).toLocaleString()}</p>
+    <div className={`note-item ${isEditing ? 'editing' : ''}`}>
+      <div className="note-header">
+        <div className="note-title-group">
+          <h3 className="note-title">{note.title}</h3>
+          <div className="note-meta">
+            <span className="note-date">
+              {new Date(note.createdAt).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            </span>
+            <span className="visibility-badge" data-visibility={visibility}>
+              {visibility === 'public' ? <FiUnlock size={12} /> : <FiLock size={12} />}
+              {visibility}
+            </span>
+          </div>
+        </div>
 
-      {note.visibility === 'public' && note.user && (
-        <p className="text-xs text-blue-600">
-          Shared by: {note.user.name}
-        </p>
-      )}
+        {/* Show owner only if it's a public note AND it's not my note */}
+        {note.visibility === 'public' && note.user && note.user._id !== currentUserId && (
+          <div className="shared-by">
+            <FiUser className="user-icon" />
+            <span>Shared by {note.user.name}</span>
+          </div>
+        )}
+      </div>
 
       {isEditing ? (
-        <div className="space-y-2 mt-2">
-          <textarea
-            className="w-full p-2 border rounded"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-          <input
-            className="w-full p-2 border rounded"
-            placeholder="Tags (comma separated)"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-          />
-          <input
-            className="w-full p-2 border rounded"
-            placeholder="Category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          />
-          <select
-            className="w-full p-2 border rounded"
-            value={visibility}
-            onChange={(e) => setVisibility(e.target.value)}
-          >
-            <option value="private">Private</option>
-            <option value="public">Public</option>
-          </select>
-          <button
-            onClick={handleUpdate}
-            className="bg-green-600 text-white px-2 py-1 rounded"
-          >
-            Save
-          </button>
+        <div className="edit-mode">
+          <div className="form-group">
+            <label className="form-label">Content</label>
+            <textarea
+              className="form-textarea"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows="4"
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Tags</label>
+              <input
+                className="form-input"
+                placeholder="Comma separated tags"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Category</label>
+              <input
+                className="form-input"
+                placeholder="Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Visibility</label>
+            <div className="radio-group">
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="visibility"
+                  value="private"
+                  checked={visibility === 'private'}
+                  onChange={() => setVisibility('private')}
+                />
+                <span className="radio-label">Private</span>
+              </label>
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="visibility"
+                  value="public"
+                  checked={visibility === 'public'}
+                  onChange={() => setVisibility('public')}
+                />
+                <span className="radio-label">Public</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="button-group">
+            <button
+              onClick={handleUpdate}
+              className="btn save-btn"
+              disabled={isUpdating}
+            >
+              {isUpdating ? (
+                <span className="spinner"></span>
+              ) : (
+                <FiSave className="icon" />
+              )}
+              Save Changes
+            </button>
+            <button
+              onClick={() => setIsEditing(false)}
+              className="btn cancel-btn"
+            >
+              <FiX className="icon" />
+              Cancel
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="mt-2">
-          <ReactMarkdown>{note.content}</ReactMarkdown>
-          {note.category && (
-            <span className="inline-block mt-1 mr-2 text-xs bg-green-200 dark:bg-green-700 text-green-800 dark:text-green-200 rounded px-2 py-1">
-              {note.category}
-            </span>
+        <div className="view-mode">
+          <div className="markdown-content">
+            <ReactMarkdown>{note.content}</ReactMarkdown>
+          </div>
+
+          {(note.category || note.tags.length > 0) && (
+            <div className="tags-container">
+              {note.category && (
+                <span className="category-tag">
+                  {note.category}
+                </span>
+              )}
+              {note.tags.map(tag => (
+                <span key={tag} className="tag">
+                  #{tag}
+                </span>
+              ))}
+            </div>
           )}
-          {note.tags.map(tag => (
-            <span
-              key={tag}
-              className="inline-block mt-1 mr-1 text-xs bg-gray-300 dark:bg-gray-700 rounded px-2 py-1"
-            >
-              {tag}
-            </span>
-          ))}
-          <span className={`inline-block mt-1 mr-2 text-xs rounded px-2 py-1 
-            ${note.visibility === 'public' 
-              ? 'bg-blue-200 dark:bg-blue-700 text-blue-800 dark:text-blue-200' 
-              : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}`}>
-            {note.visibility}
-          </span>
         </div>
       )}
 
-      <div className="mt-2 space-x-2">
+      <div className="note-footer">
         <button
           onClick={() => setIsEditing(!isEditing)}
-          className="bg-yellow-500 text-white px-2 py-1 rounded"
+          className="action-btn edit-btn"
         >
-          {isEditing ? 'Cancel' : 'Edit'}
+          <FiEdit2 className="icon" />
+          {isEditing ? 'Cancel Edit' : 'Edit Note'}
         </button>
         <button
           onClick={handleDelete}
-          className="bg-red-500 text-white px-2 py-1 rounded"
+          className="action-btn delete-btn"
+          disabled={isDeleting}
         >
+          {isDeleting ? (
+            <span className="spinner"></span>
+          ) : (
+            <FiTrash2 className="icon" />
+          )}
           Delete
         </button>
       </div>

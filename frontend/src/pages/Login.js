@@ -20,7 +20,7 @@ function Login({ toggleTheme, currentTheme }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', formData);
 
@@ -36,7 +36,7 @@ function Login({ toggleTheme, currentTheme }) {
         confirmButtonText: 'Continue'
       });
 
-      navigate('/');
+      navigate('/dashboard'); // ✅ Go to protected dashboard
     } catch (err) {
       Swal.fire({
         title: '⚠️ Login Failed',
@@ -54,13 +54,13 @@ function Login({ toggleTheme, currentTheme }) {
       <div className="theme-toggle" onClick={toggleTheme}>
         {currentTheme === 'dark' ? '☀️' : '🌙'}
       </div>
-      
+
       <div className="auth-card">
         <div className="auth-header">
           <h2 className="auth-title">🔒 Welcome Back</h2>
           <p className="auth-subtitle">Sign in to access your notes</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="username">📱 Username</label>
@@ -74,7 +74,7 @@ function Login({ toggleTheme, currentTheme }) {
               required
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="password">🔑 Password</label>
             <input
@@ -87,21 +87,26 @@ function Login({ toggleTheme, currentTheme }) {
               required
             />
           </div>
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             className="auth-button login-button"
             disabled={isLoading}
           >
             {isLoading ? '🔐 Logging in...' : '👉 Login'}
           </button>
         </form>
-        
-        <div className="auth-footer">
-          <p>New to NotesApp? <span onClick={() => navigate('/register')}>Create account</span></p>
-          {/* <Link to="/register" className="auth-link">Create account</Link> */}
 
-          <p className="password-hint">Forgot password? <span>Reset it</span></p>
+        <div className="auth-footer">
+          <p>
+            New to NotesApp?{' '}
+            <span onClick={() => navigate('/signup')} className="auth-link">
+              Create account
+            </span>
+          </p>
+          <p className="password-hint">
+            Forgot password? <span className="auth-link">Reset it</span>
+          </p>
         </div>
       </div>
     </div>

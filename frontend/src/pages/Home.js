@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import NoteForm from '../components/NoteForm';
 import NoteItem from '../components/NoteItem';
 import '../css/Home.css';
 
 function Home() {
+  const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const name = localStorage.getItem('name');
   const ageGroup = localStorage.getItem('ageGroup');
@@ -16,7 +18,10 @@ function Home() {
   const [visibilityFilter, setVisibilityFilter] = useState('all');
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      navigate('/login');
+      return;
+    }
 
     const fetchNotes = async () => {
       try {
@@ -29,41 +34,35 @@ function Home() {
         });
         setNotes(res.data);
       } catch (err) {
+        console.error(err);
         alert('Failed to load notes. Please login again.');
+        localStorage.clear();
+        navigate('/login');
       }
     };
 
     fetchNotes();
-  }, [token, refresh, search, sort, visibilityFilter]);
+  }, [token, refresh, search, sort, visibilityFilter, navigate]);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Logout?',
+      text: `Are you sure you want to logout, ${name}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, logout',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.clear();
+        navigate('/', { replace: true });
+        window.location.reload();
+      }
+    });
+  };
 
   if (!token) {
-    return (
-      <div className="home-welcome-container">
-        <div className="home-welcome-card fade-in">
-          <h1 className="home-welcome-title">📝 Welcome to NotesApp</h1>
-          <p className="home-welcome-description">
-            A secure, fast, and beautiful app to manage your notes with markdown, tags, and categories.
-          </p>
-          
-          <ul className="home-features-list">
-            <li>✨ Create rich-text notes with Markdown</li>
-            <li>🏷️ Organize with tags and categories</li>
-            <li>🌓 Dark / light mode</li>
-            <li>🔍 Search, sort, and filter</li>
-            <li>🎯 100% free & open-source</li>
-          </ul>
-          
-          <div className="home-auth-buttons">
-            <Link to="/signup" className="home-signup-btn">
-              Signup
-            </Link>
-            <Link to="/login" className="home-login-btn">
-              Login
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -73,6 +72,9 @@ function Home() {
           <h2>👋 Welcome back, {name}!</h2>
           <p className="home-age-group">Age Group: {ageGroup}</p>
         </div>
+        <button onClick={handleLogout} className="logout-btn-inline">
+          🚪 Logout
+        </button>
       </div>
 
       <NoteForm onSaved={() => setRefresh(!refresh)} />
@@ -87,7 +89,7 @@ function Home() {
             className="search-input"
           />
         </div>
-        
+
         <div className="filters-container">
           <div className="filter-group">
             <label>📅 Sort:</label>
@@ -100,7 +102,7 @@ function Home() {
               <option value="asc">Oldest first</option>
             </select>
           </div>
-          
+
           <div className="filter-group">
             <label>👁️ Visibility:</label>
             <select
